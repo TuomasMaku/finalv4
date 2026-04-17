@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#060606">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>ARENA</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ══════════════════ TODAY ══════════════════ -->
+<section class="tab active" id="tab-today">
+
+  <header class="hero hero-premium">
+    <div class="hero-brand">ARENA<span class="hero-dot">·</span><span id="todayDate">—</span></div>
+    <div class="hero-topline">
+      <div>
+        <h1 class="hero-title" id="greeting">Salut</h1>
+        <p class="hero-quote" id="quote">Discipline > motivation</p>
+      </div>
+      <div class="hero-orb">
+        <div class="hero-orb-ring"></div>
+        <div class="hero-orb-core">
+          <span class="hero-orb-kicker">Level</span>
+          <span class="hero-orb-value" id="xpLevel">1</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="xp-card premium-panel">
+      <div class="xp-head">
+        <div>
+          <div class="mini-label">Progression</div>
+          <div class="xp-title"><span id="rankName">Rookie</span> <span class="muted">· XP system</span></div>
+        </div>
+        <div class="xp-side"><span id="streakNum">0</span><span class="muted">j streak</span></div>
+      </div>
+      <div class="xp-bar-wrap"><div class="xp-bar" id="rankBar"></div></div>
+      <div class="xp-meta"><span id="xpMeta">0 / 100 XP</span><span id="streakSub">Commence aujourd'hui</span></div>
+    </div>
+  </header>
+
+  <div class="today-grid-premium">
+    <div class="premium-panel score-panel">
+      <div class="score-ring-wrap">
+        <div class="score-ring" id="dailyScoreRing"><span id="dailyScoreVal">0%</span></div>
+      </div>
+      <div class="score-copy">
+        <div class="mini-label">Daily score</div>
+        <div class="score-title">Ton pilotage du jour</div>
+        <p class="score-text" id="scoreSummary">Commence par cocher tes bases.</p>
+      </div>
+      <div class="score-breakdown" id="scoreBreakdown"></div>
+    </div>
+
+    <div class="premium-panel focus-panel">
+      <div class="mini-label">Focus du jour</div>
+      <div class="focus-title" id="focusTitle">Verrouille tes bases</div>
+      <p class="focus-text" id="focusText">Protéines, eau et séance. Pas de trou dans la raquette.</p>
+      <div class="focus-pills">
+        <span class="focus-pill" id="focusPill1">Train</span>
+        <span class="focus-pill" id="focusPill2">Protein</span>
+        <span class="focus-pill" id="focusPill3">Hydrate</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card session-card session-card-premium" id="sessionCard" onclick="goTab('train')">
+    <div class="session-top">
+      <span class="session-tag" id="sessionTag">—</span>
+      <span class="session-day" id="sessionDay">—</span>
+    </div>
+    <div class="session-title" id="sessionTitle">Aucun cycle en cours</div>
+    <div class="session-meta" id="sessionMeta">Appuie sur ⟳ pour démarrer</div>
+    <div class="session-progress">
+      <div class="session-progress-bar" id="sessionProgressBar"></div>
+    </div>
+    <div class="session-progress-text" id="sessionProgressText">0 / 0 exos</div>
+    <button class="session-cta" id="sessionStartBtn" onclick="event.stopPropagation(); goTab('train')">Start session</button>
+  </div>
+
+  <div class="card card-premium daily-card-premium" id="dailyCard" onclick="handleDailyCardClick(event)">
+    <div class="card-header card-header-tight daily-card-head">
+      <div class="daily-card-title-wrap">
+        <span class="card-title">🔥 Daily Grind</span>
+        <span class="daily-card-sub muted" id="dailyCardSub">Clique pour ouvrir</span>
+      </div>
+      <div class="daily-card-head-right">
+        <span class="card-value" id="dailyPct">0%</span>
+        <button class="daily-toggle-btn" id="dailyToggleBtn" type="button" aria-label="Ouvrir ou fermer Daily Grind">▾</button>
+      </div>
+    </div>
+    <div class="daily-card-body" id="dailyCardBody">
+      <div class="daily-grid" id="dailyGrid"></div>
+      <div class="daily-footer-row">
+        <span class="muted">Push les mini objectifs du jour.</span>
+        <button class="mini-action" onclick="event.stopPropagation(); resetDailyProgress()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nutrition-grid">
+    <div class="card card-premium nutrition-card protein-card">
+      <div class="card-header card-header-tight">
+        <span class="card-title">🥩 Protéines</span>
+        <span class="card-value"><span id="protG">0</span><span class="muted">/<span id="protTargetLabel">150</span>g</span></span>
+      </div>
+      <div class="macro-progress"><div class="macro-progress-bar protein" id="protBar"></div></div>
+      <div class="macro-subline"><span id="protStatus">Objectif à lancer</span><span class="muted" id="protPct">0%</span></div>
+      <div class="macro-btn-row" id="protBlocks"></div>
+    </div>
+
+    <div class="card card-premium nutrition-card water-card">
+      <div class="card-header card-header-tight">
+        <span class="card-title">💧 Hydratation</span>
+        <span class="card-value"><span id="waterCount">0</span><span class="muted">/<span id="waterTargetLabel">2500</span>ml</span></span>
+      </div>
+      <div class="macro-progress"><div class="macro-progress-bar water" id="waterBar"></div></div>
+      <div class="macro-subline"><span id="waterStatus">Monte progressivement</span><span class="muted" id="waterPct">0%</span></div>
+      <div class="macro-btn-row macro-btn-row-water" id="waterBlocks"></div>
+    </div>
+  </div>
+
+  <div class="quick-actions quick-actions-premium">
+    <button class="qa qa-wide" onclick="goTab('train')"><span class="qa-icon">⚡</span><span>Start</span></button>
+    <button class="qa qa-wide" onclick="openQuickLog('run')"><span class="qa-icon">🏃</span><span>Run</span></button>
+    <button class="qa qa-wide" onclick="openQuickLog('weight')"><span class="qa-icon">⚖️</span><span>Peser</span></button>
+    <button class="qa qa-wide" onclick="openSettings()"><span class="qa-icon">⚙️</span><span>Setup</span></button>
+  </div>
+
+</section>
+
+<!-- ══════════════════ TRAIN ══════════════════ -->
+<section class="tab" id="tab-train">
+
+  <div class="subnav">
+    <button class="sub active" data-sub="cycle" onclick="switchSub('cycle')">Programme</button>
+    <button class="sub" data-sub="charges" onclick="switchSub('charges')">Charges</button>
+    <button class="sub" data-sub="run" onclick="switchSub('run')">Run</button>
+  </div>
+
+  <!-- Programme -->
+  <div class="sub-content active" id="sub-cycle">
+    <header class="hero hero-sm">
+      <div class="hero-brand">Cycle 8 jours</div>
+      <h1 class="hero-title-sm">PROGRAMME</h1>
+    </header>
+
+    <div class="cycle-status">
+      <div class="cycle-dots" id="cycleDots"></div>
+      <div class="cycle-info">
+        <span id="cyclePos">J0/8</span>
+        <span class="muted" id="cycleDate">—</span>
+      </div>
+    </div>
+
+    <div class="days-grid" id="daysGrid"></div>
+
+    <div class="actions">
+      <button class="btn-accent" id="startCycleBtn">⟳ Démarrer un cycle</button>
+      <button class="btn-outline" id="skipSessionBtn" style="display:none">⏭ Passer à la prochaine séance</button>
+    </div>
+  </div>
+
+  <!-- Charges -->
+  <div class="sub-content" id="sub-charges">
+    <header class="hero hero-sm">
+      <div class="hero-brand">Forces & Records</div>
+      <h1 class="hero-title-sm">CHARGES</h1>
+    </header>
+
+    <div class="big-stats" id="chargesBigStats"></div>
+
+    <h3 class="section-title">Key lifts</h3>
+    <div id="keyLifts"></div>
+
+    <h3 class="section-title">Toutes charges</h3>
+    <div id="allCharges"></div>
+  </div>
+
+  <!-- Run -->
+  <div class="sub-content" id="sub-run">
+    <header class="hero hero-sm">
+      <div class="hero-brand">Running Tracker</div>
+      <h1 class="hero-title-sm">RUN</h1>
+    </header>
+
+    <div class="big-stats">
+      <div class="big-stat"><div class="big-stat-val" id="runTotalKm">0</div><div class="big-stat-lbl">Km totaux</div></div>
+      <div class="big-stat"><div class="big-stat-val" id="runMonth">0</div><div class="big-stat-lbl">Km ce mois</div></div>
+      <div class="big-stat"><div class="big-stat-val" id="runBest">—</div><div class="big-stat-lbl">Best pace</div></div>
+      <div class="big-stat"><div class="big-stat-val" id="runWeek">0</div><div class="big-stat-lbl">Runs/sem</div></div>
+    </div>
+
+    <button class="btn-accent full" onclick="openQuickLog('run')">+ Logger un run</button>
+
+    <h3 class="section-title">Records</h3>
+    <div id="runPrs"></div>
+
+    <h3 class="section-title">Évolution pace</h3>
+    <div class="chart-wrap">
+      <svg id="paceChart" viewBox="0 0 500 100" preserveAspectRatio="none"></svg>
+    </div>
+
+    <h3 class="section-title">Historique</h3>
+    <div id="runHistory"></div>
+  </div>
+
+</section>
+
+<!-- ══════════════════ BODY ══════════════════ -->
+<section class="tab" id="tab-body">
+  <header class="hero hero-sm">
+    <div class="hero-brand">Physique & objectifs</div>
+    <h1 class="hero-title-sm">BODY</h1>
+  </header>
+
+  <div class="big-stats">
+    <div class="big-stat"><div class="big-stat-val" id="bodyCurrentKg">—</div><div class="big-stat-lbl">Poids actuel</div></div>
+    <div class="big-stat"><div class="big-stat-val" id="bodyDelta">—</div><div class="big-stat-lbl">Évolution 30j</div></div>
+  </div>
+
+  <button class="btn-accent full" onclick="openQuickLog('weight')">+ Peser aujourd'hui</button>
+
+  <h3 class="section-title">Courbe poids · 30j</h3>
+  <div class="chart-wrap">
+    <svg id="weightChart" viewBox="0 0 500 120" preserveAspectRatio="none"></svg>
+  </div>
+
+  <h3 class="section-title">Objectifs</h3>
+  <div id="goalsList"></div>
+  <button class="btn-outline full" onclick="openGoalModal()">+ Nouvel objectif</button>
+
+  <h3 class="section-title">Achievements <span class="muted" id="achCount">0/0</span></h3>
+  <div class="ach-grid" id="achGrid"></div>
+</section>
+
+<!-- ══════════════════ STATS ══════════════════ -->
+<section class="tab" id="tab-stats">
+  <header class="hero hero-sm">
+    <div class="hero-brand">Analyses long terme</div>
+    <h1 class="hero-title-sm">STATS</h1>
+  </header>
+
+  <div class="big-stats">
+    <div class="big-stat"><div class="big-stat-val" id="statPerfectDays">0</div><div class="big-stat-lbl">Jours 100%</div></div>
+    <div class="big-stat"><div class="big-stat-val" id="statBestStreak">0</div><div class="big-stat-lbl">Meilleur streak</div></div>
+  </div>
+  <div class="big-stats">
+    <div class="big-stat"><div class="big-stat-val" id="statTotalReps">0</div><div class="big-stat-lbl">Reps totales</div></div>
+    <div class="big-stat"><div class="big-stat-val" id="statTotalVolume">0</div><div class="big-stat-lbl">Volume (t)</div></div>
+  </div>
+
+  <h3 class="section-title">Activité · 90 jours</h3>
+  <div class="heatmap-wrap">
+    <div class="heatmap" id="heatmap"></div>
+    <div class="heatmap-legend">
+      <span><span class="hm-dot hm-done"></span>Complet</span>
+      <span><span class="hm-dot hm-partial"></span>Partiel</span>
+      <span><span class="hm-dot hm-empty"></span>Vide</span>
+    </div>
+  </div>
+
+  <h3 class="section-title">Par exercice du défi</h3>
+  <div id="exTotals"></div>
+
+  <h3 class="section-title">Historique daily · 30 derniers</h3>
+  <div id="historyList"></div>
+</section>
+
+<!-- ══════════════════ NAV ══════════════════ -->
+<nav class="tabbar">
+  <button class="tab-btn active" data-tab="today" onclick="goTab('today')"><span class="tab-icon">⚡</span>Today</button>
+  <button class="tab-btn" data-tab="train" onclick="goTab('train')"><span class="tab-icon">💪</span>Train</button>
+  <button class="tab-btn" data-tab="body" onclick="goTab('body')"><span class="tab-icon">⚖️</span>Body</button>
+  <button class="tab-btn" data-tab="stats" onclick="goTab('stats')"><span class="tab-icon">📊</span>Stats</button>
+</nav>
+
+<!-- ══════════════════ MODAL: Quick log ══════════════════ -->
+<div class="modal" id="quickLogModal" onclick="if(event.target===this) closeModal('quickLogModal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span id="quickLogTitle">Log</span>
+      <button class="modal-close" onclick="closeModal('quickLogModal')">✕</button>
+    </div>
+
+    <div id="qlRunForm" style="display:none">
+      <div class="input-row">
+        <div class="input-wrap"><label>Distance</label><input type="number" id="qlDist" placeholder="5.0" step="0.1" inputmode="decimal"><span class="unit">km</span></div>
+        <div class="input-wrap"><label>Min</label><input type="number" id="qlMin" placeholder="30" inputmode="numeric"><span class="unit">m</span></div>
+        <div class="input-wrap"><label>Sec</label><input type="number" id="qlSec" placeholder="0" inputmode="numeric"><span class="unit">s</span></div>
+      </div>
+      <div class="pace-preview" id="qlPacePreview">
+        <span>Pace</span><span id="qlPaceVal">—</span><span class="muted">/km</span>
+      </div>
+      <div class="zone-pick" id="qlZonePick">
+        <button class="zone-btn active" data-zone="z2">Z2</button>
+        <button class="zone-btn" data-zone="tempo">Tempo</button>
+        <button class="zone-btn" data-zone="interval">Interval</button>
+        <button class="zone-btn" data-zone="long">Long</button>
+      </div>
+      <textarea id="qlNote" placeholder="Ressenti (optionnel)..." rows="2"></textarea>
+      <button class="btn-accent full" onclick="saveRun()">Logger ✓</button>
+    </div>
+
+    <div id="qlWeightForm" style="display:none">
+      <div class="input-row">
+        <div class="input-wrap"><label>Poids</label><input type="number" id="qlKg" placeholder="75" step="0.1" inputmode="decimal"><span class="unit">kg</span></div>
+        <div class="input-wrap"><label>Tour taille</label><input type="number" id="qlWaist" placeholder="82" step="0.5" inputmode="decimal"><span class="unit">cm</span></div>
+      </div>
+      <button class="btn-accent full" onclick="saveWeight()">Enregistrer ✓</button>
+    </div>
+
+    <div id="qlChargeForm" style="display:none">
+      <div class="ql-exname" id="qlChargeName"></div>
+      <div class="ql-sets" id="qlChargeSets"></div>
+      <div id="qlChargeHistory" class="charge-hist"></div>
+      <div class="input-row">
+        <div class="input-wrap"><label>Charge</label><input type="number" id="qlChargeKg" placeholder="70" step="2.5" inputmode="decimal"><span class="unit">kg</span></div>
+        <div class="input-wrap"><label>Reps</label><input type="number" id="qlChargeReps" placeholder="8" inputmode="numeric"><span class="unit">reps</span></div>
+      </div>
+      <div id="qlChargeSuggest" class="charge-suggest"></div>
+      <button class="btn-accent full" onclick="saveCharge()">Logger ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ MODAL: Goal ══════════════════ -->
+<div class="modal" id="goalModal" onclick="if(event.target===this) closeModal('goalModal')">
+  <div class="modal-box">
+    <div class="modal-head"><span>Nouvel objectif</span><button class="modal-close" onclick="closeModal('goalModal')">✕</button></div>
+    <div class="goal-tpl-grid" id="goalTplGrid"></div>
+    <div id="goalForm" style="display:none">
+      <input type="text" id="goalName" placeholder="Nom de l'objectif">
+      <div class="input-row">
+        <div class="input-wrap"><label>Actuel</label><input type="number" id="goalCurrent" step="0.1"><span class="unit" id="goalUnit1"></span></div>
+        <div class="input-wrap"><label>Cible</label><input type="number" id="goalTarget" step="0.1"><span class="unit" id="goalUnit2"></span></div>
+      </div>
+      <div class="input-wrap"><label>Deadline (optionnel)</label><input type="date" id="goalDate"></div>
+      <button class="btn-accent full" onclick="saveGoal()">Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ MODAL: Settings ══════════════════ -->
+<div class="modal" id="settingsModal" onclick="if(event.target===this) closeModal('settingsModal')">
+  <div class="modal-box">
+    <div class="modal-head"><span>Options</span><button class="modal-close" onclick="closeModal('settingsModal')">✕</button></div>
+
+    <div class="setting">
+      <div class="setting-label">
+        <div>☠️ Mode Hardcore</div>
+        <div class="muted">Skip = streak reset. Zéro pitié.</div>
+      </div>
+      <div class="toggle" id="hardcoreToggle" onclick="toggleHardcore()"></div>
+    </div>
+
+    <h3 class="section-title">Nutrition targets</h3>
+    <div class="input-row">
+      <div class="input-wrap">
+        <label>Cible protéines</label>
+        <input type="number" id="proteinTarget" step="10"><span class="unit">g</span>
+      </div>
+      <div class="input-wrap">
+        <label>Cible eau</label>
+        <input type="number" id="waterTarget" step="250"><span class="unit">ml</span>
+      </div>
+    </div>
+    <div class="input-row">
+      <button class="btn-outline" onclick="saveProteinTarget()">Sauvegarder</button>
+      <button class="btn-outline" onclick="saveWaterTarget()">Eau auto</button>
+    </div>
+
+    <h3 class="section-title">Données</h3>
+    <button class="btn-outline full" onclick="exportData()">📦 Exporter mes données</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+    <button class="btn-outline full" onclick="document.getElementById('importFile').click()">📂 Importer une sauvegarde</button>
+
+    <h3 class="section-title danger-title">Zone dangereuse</h3>
+    <button class="btn-danger full" onclick="confirmReset('stats')">Effacer l'historique stats</button>
+    <button class="btn-danger full" onclick="confirmReset('runs')">Effacer tous les runs</button>
+    <button class="btn-danger full" onclick="confirmReset('all')">⚠️ Tout réinitialiser</button>
+  </div>
+</div>
+
+<!-- ══════════════════ MODAL: Confirm ══════════════════ -->
+<div class="modal" id="confirmModal" onclick="if(event.target===this) closeModal('confirmModal')">
+  <div class="modal-box">
+    <div class="modal-head"><span id="confirmTitle">Confirmer ?</span></div>
+    <p id="confirmMsg" class="confirm-msg"></p>
+    <div class="input-row">
+      <button class="btn-outline" onclick="closeModal('confirmModal')">Annuler</button>
+      <button class="btn-danger" id="confirmBtn">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ Toasts ══════════════════ -->
+<div id="toastArea"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

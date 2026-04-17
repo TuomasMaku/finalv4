@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "ARENA Training",
+  "short_name": "ARENA",
+  "description": "Training tracker — muscu, run, diet",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#060606",
+  "theme_color": "#060606",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%23060606'/%3E%3Ctext x='96' y='135' text-anchor='middle' font-size='120' font-family='Arial Black' fill='%23c9ff00'%3EA%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23060606'/%3E%3Ctext x='256' y='360' text-anchor='middle' font-size='320' font-family='Arial Black' fill='%23c9ff00'%3EA%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
